@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DEAD SHIFT — Factory Zombie FPS + Open District</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23111418'/><text x='50' y='68' font-size='58' font-family='Arial' font-weight='900' fill='%23ffb454' text-anchor='middle'>D</text></svg>" />
+</head>
+<body>
+<div id="app"></div>
+
+<!-- damage / fx overlays -->
+<div id="dmg-vignette"></div>
+<div id="dmg-arc"></div>
+<div id="heal-vignette"></div>
+<div id="scope" class="hidden"><div class="scope-ring"></div><div class="scope-h"></div><div class="scope-v"></div></div>
+<div id="fade" class="hidden"></div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div id="crosshair"><span class="ch t"></span><span class="ch b"></span><span class="ch l"></span><span class="ch r"></span><span id="hitmarker"><i></i><i></i><i></i><i></i></span></div>
+  <div id="hud-topleft">
+    <canvas id="minimap" width="190" height="190"></canvas>
+    <div id="objective"></div>
+    <div id="waypoint-dist"></div>
+  </div>
+  <div id="hud-topcenter">
+    <div id="wave-banner"></div>
+    <div id="intermission" class="hidden"></div>
+  </div>
+  <div id="hud-topright">
+    <div id="cash">$0</div>
+    <div id="score">SCORE 0</div>
+    <div id="clock">22:40</div>
+  </div>
+  <div id="hud-bottomleft">
+    <div id="health-wrap"><div id="health-bar"></div><span id="health-num">100</span></div>
+    <div id="stamina-wrap"><div id="stamina-bar"></div></div>
+    <div id="zone-name"></div>
+  </div>
+  <div id="hud-bottomright">
+    <div id="weapon-name">P-9 Sidearm</div>
+    <div id="ammo"><span id="ammo-mag">12</span><span id="ammo-sep"> / </span><span id="ammo-res">∞</span></div>
+    <div id="weapon-slots"></div>
+    <div id="car-hud" class="hidden"><span id="car-speed">0 km/h</span><span id="car-hp"></span></div>
+  </div>
+  <div id="interact" class="hidden"></div>
+  <div id="subtitle" class="hidden"></div>
+  <div id="toast" class="hidden"></div>
+  <div id="phone-toast" class="hidden">Phone — press P</div>
+  <div id="like-meter" class="hidden"><label>LIKE</label><div class="like-track"><div id="like-fill"></div></div></div>
+  <div id="boss-hp" class="hidden"><label>BRUTE</label><div class="like-track"><div id="boss-fill"></div></div></div>
+</div>
+
+<!-- PHONE -->
+<div id="phone" class="hidden">
+  <div id="phone-frame">
+    <div id="phone-status"><span id="phone-clock">22:40</span><span>DEAD SHIFT MOBILE</span><span id="phone-batt">▮▮▮▯</span></div>
+    <div id="phone-screen"></div>
+    <div id="phone-homebar"></div>
+  </div>
+</div>
+
+<!-- FULL MAP -->
+<div id="fullmap" class="hidden">
+  <div class="map-head"><h2>DISTRICT MAP</h2><span>Click anywhere to set a waypoint · Click the waypoint again to clear it · M / Esc to close</span></div>
+  <canvas id="mapcanvas" width="900" height="900"></canvas>
+  <div id="map-legend"></div>
+</div>
+
+<!-- MAIN MENU -->
+<div id="menu">
+  <div class="menu-inner">
+    <div class="menu-kicker">NIGHT DISTRICT · FACTORY OUTBREAK</div>
+    <h1 class="game-title">DEAD<span> SHIFT</span></h1>
+    <p class="menu-sub">First-person zombie survival in the factory, a free-roam night district outside — cars, a gun shop, a clinic and the Velvet Room club. One wallet, one arsenal.</p>
+    <div class="menu-buttons">
+      <button id="btn-continue" class="mbtn hidden">CONTINUE</button>
+      <button id="btn-waves" class="mbtn primary">ZOMBIE WAVES</button>
+      <button id="btn-roam" class="mbtn">FREE ROAM</button>
+      <button id="btn-howto" class="mbtn">HOW TO PLAY</button>
+      <button id="btn-settings" class="mbtn">SETTINGS</button>
+      <button id="btn-credits" class="mbtn">CREDITS</button>
+    </div>
+    <div id="menu-best" class="menu-best"></div>
+    <div class="age-notice">18+ — Contains violence, horror themes and an adults-only club with costumed dancers (no nudity). You can reduce club content in Settings.</div>
+    <div class="menu-ver">v1.0 · Three.js / WebGL2 · All sound synthesised in-browser</div>
+  </div>
+</div>
+
+<!-- HOW TO PLAY -->
+<div id="howto" class="panel hidden">
+  <h2>HOW TO PLAY</h2>
+  <div class="cols">
+    <div>
+      <h3>On foot</h3>
+      <p><b>WASD</b> move · <b>Mouse</b> look · <b>Shift</b> sprint · <b>Space</b> jump · <b>Ctrl / C*</b> crouch<br>
+      <b>Left click</b> shoot · <b>Right click</b> aim (ADS) · <b>R</b> reload · <b>1–5 / wheel</b> weapons · <b>V</b> melee<br>
+      <b>E</b> interact · <b>P</b> phone · <b>M</b> map · <b>Esc</b> pause</p>
+      <h3>In a car</h3>
+      <p><b>E</b> enter/exit at the driver's door · <b>WASD</b> drive · <b>Space</b> handbrake · <b>C</b> chase/hood camera · <b>H</b> horn · <b>F</b> flip a stuck car</p>
+    </div>
+    <div>
+      <h3>The loop</h3>
+      <p>Survive zombie waves in the factory to earn cash. Spend it at wall buys, the Gun Shop, the Clinic — or at the Velvet Room. Zombies drop health and ammo. Between waves you get 20 seconds to re-arm.</p>
+      <h3>Phone &amp; map</h3>
+      <p>Your phone (<b>P</b>) has a working map with waypoints and GPS, messages, contacts that do real things (cab, ammo drop, mechanic, clinic, club booking), your bank ledger and a checklist.</p>
+      <p class="dim">* C toggles crouch on foot and camera in a car.</p>
+    </div>
+  </div>
+  <button class="mbtn" data-close="howto">BACK</button>
+</div>
+
+<!-- CREDITS -->
+<div id="credits" class="panel hidden">
+  <h2>CREDITS</h2>
+  <p>DEAD SHIFT — built for Hrishav.<br>Design research, code, 3D and audio synthesis: Pip (Muse).<br>Engine: Three.js (MIT) · Build: Vite + TypeScript.<br>Every sound in this game is generated live with the Web Audio API — no audio files.<br>Weapon, wave, car and club numbers follow the commissioned design report.</p>
+  <button class="mbtn" data-close="credits">BACK</button>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings" class="panel hidden">
+  <h2>SETTINGS</h2>
+  <div class="set-grid">
+    <label>Mouse sensitivity <input id="set-sens" type="range" min="0.1" max="2" step="0.05"><span class="set-val" id="val-sens"></span></label>
+    <label>Invert Y <input id="set-invert" type="checkbox"></label>
+    <label>Field of view <input id="set-fov" type="range" min="70" max="100" step="1"><span class="set-val" id="val-fov"></span></label>
+    <label>Quality
+      <select id="set-quality"><option value="auto">Auto</option><option value="high">High</option><option value="low">Low</option></select></label>
+    <label>Difficulty
+      <select id="set-difficulty"><option value="normal">Normal</option><option value="hard">Hard</option></select></label>
+    <label>Master volume <input id="set-vol-master" type="range" min="0" max="1" step="0.05"><span class="set-val" id="val-vol-master"></span></label>
+    <label>Music volume <input id="set-vol-music" type="range" min="0" max="1" step="0.05"><span class="set-val" id="val-vol-music"></span></label>
+    <label>SFX volume <input id="set-vol-sfx" type="range" min="0" max="1" step="0.05"><span class="set-val" id="val-vol-sfx"></span></label>
+    <label>UI volume <input id="set-vol-ui" type="range" min="0" max="1" step="0.05"><span class="set-val" id="val-vol-ui"></span></label>
+    <label>Mute all <input id="set-mute" type="checkbox"></label>
+    <label>Subtitles <input id="set-subtitles" type="checkbox"></label>
+    <label>Head bob <input id="set-headbob" type="checkbox"></label>
+    <label>Damage vignette <input id="set-vignette" type="range" min="0" max="1" step="0.1"><span class="set-val" id="val-vignette"></span></label>
+    <label>Reduce club content <input id="set-reduceclub" type="checkbox"></label>
+    <label>Crouch toggle <input id="set-crouchtoggle" type="checkbox"></label>
+  </div>
+  <div class="set-actions">
+    <button id="btn-reset-settings" class="mbtn">RESET DEFAULTS</button>
+    <button class="mbtn primary" data-close="settings">DONE</button>
+  </div>
+</div>
+
+<!-- PAUSE -->
+<div id="pause" class="panel hidden">
+  <h2>PAUSED</h2>
+  <div class="menu-buttons">
+    <button id="btn-resume" class="mbtn primary">RESUME</button>
+    <button id="btn-pause-map" class="mbtn">FULL MAP</button>
+    <button id="btn-pause-settings" class="mbtn">SETTINGS</button>
+    <button id="btn-restart-wave" class="mbtn">RESTART WAVE</button>
+    <button id="btn-quit-menu" class="mbtn">QUIT TO MENU</button>
+  </div>
+  <p class="dim">Click RESUME to re-lock the mouse.</p>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameover" class="panel hidden">
+  <h2 class="go-title">YOU DIED</h2>
+  <div id="go-stats"></div>
+  <div class="menu-buttons">
+    <button id="btn-go-restart" class="mbtn primary">RESTART WAVE</button>
+    <button id="btn-go-roam" class="mbtn">FREE ROAM</button>
+    <button id="btn-go-menu" class="mbtn">MAIN MENU</button>
+  </div>
+</div>
+
+<div id="loading"><div class="load-box"><div class="load-title">DEAD SHIFT</div><div class="load-bar"><div id="load-fill"></div></div><div id="load-msg">Building the district…</div></div></div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
